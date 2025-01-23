@@ -40,7 +40,7 @@ public:
 class Burger {
 public:
     std::string name;
-    std::vector<Ingredient*> ingredients;
+    std::vector<Ingredient*> ingredients; 
     double price;
 
     Burger(std::string name) : name(name), price(0) {}
@@ -66,8 +66,27 @@ public:
 
     void prepareIngredients() const {
         for (const auto& ingredient : ingredients) {
-            ingredient->prepare();
+            ingredient->prepare(); 
         }
+    }
+
+    void cook() const {
+        std::cout << "Приготовление бургера: " << name << std::endl;
+        prepareIngredients();
+        std::cout << "Бургер готов!" << std::endl;
+    }
+};
+
+class Worker {
+public:
+    std::string name;
+
+    Worker(std::string name) : name(name) {}
+
+    void prepareBurger(Burger& burger) const {
+        std::cout << "Работник " << name << " начинает готовить бургер." << std::endl;
+        burger.cook();
+        std::cout << "Работник " << name << " закончил приготовление бургера." << std::endl;
     }
 };
 
@@ -81,7 +100,8 @@ int main() {
     burger.addIngredient(&bun);
     burger.addIngredient(&patty);
 
-    burger.prepareIngredients();
+    Worker worker("Иван");
+    worker.prepareBurger(burger);
 
     std::cout << "Цена бургера: " << burger.calculatePrice() << " рублей" << std::endl;
 

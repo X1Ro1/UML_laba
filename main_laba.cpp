@@ -100,7 +100,7 @@ int main() {
     burger.addIngredient(&bun);
     burger.addIngredient(&patty);
 
-    Worker worker("Иван");
+    Worker worker("Артем");
     worker.prepareBurger(burger);
 
     std::cout << "Цена бургера: " << burger.calculatePrice() << " рублей" << std::endl;

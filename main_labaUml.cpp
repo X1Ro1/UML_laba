@@ -17,13 +17,11 @@ public:
     }
 };
 
-// Класс для конкретного типа ингредиента
 class Bun : public Ingredient {
 public:
     Bun(std::string name, std::string type, double price, std::string desc)
         : Ingredient(name, type, price, desc) {}
 
-    // Переопределение виртуального метода
     void prepare() const override {
         std::cout << "Подготовка булочки: " << name << std::endl;
     }
@@ -42,7 +40,7 @@ public:
 class Burger {
 public:
     std::string name;
-    std::vector<Ingredient*> ingredients; // Используем указатели на базовый класс
+    std::vector<Ingredient*> ingredients;
     double price;
 
     Burger(std::string name) : name(name), price(0) {}
@@ -68,7 +66,7 @@ public:
 
     void prepareIngredients() const {
         for (const auto& ingredient : ingredients) {
-            ingredient->prepare(); // Полиморфный вызов метода
+            ingredient->prepare();
         }
     }
 };
@@ -83,7 +81,7 @@ int main() {
     burger.addIngredient(&bun);
     burger.addIngredient(&patty);
 
-    burger.prepareIngredients(); // Полиморфный вызов
+    burger.prepareIngredients();
 
     std::cout << "Цена бургера: " << burger.calculatePrice() << " рублей" << std::endl;
 

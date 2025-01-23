@@ -9,27 +9,53 @@ public:
     double price;
     std::string description;
 
-    Ingredient(std::string name, std::string type, double price, std::string desc): 
+    Ingredient(std::string name, std::string type, double price, std::string desc) :
         name(name), type(type), price(price), description(desc) {}
+
+    virtual void prepare() const {
+        std::cout << "Подготовка ингредиента: " << name << std::endl;
+    }
+};
+
+// Класс для конкретного типа ингредиента
+class Bun : public Ingredient {
+public:
+    Bun(std::string name, std::string type, double price, std::string desc)
+        : Ingredient(name, type, price, desc) {}
+
+    // Переопределение виртуального метода
+    void prepare() const override {
+        std::cout << "Подготовка булочки: " << name << std::endl;
+    }
+};
+
+class Patty : public Ingredient {
+public:
+    Patty(std::string name, std::string type, double price, std::string desc)
+        : Ingredient(name, type, price, desc) {}
+
+    void prepare() const override {
+        std::cout << "Подготовка котлеты: " << name << std::endl;
+    }
 };
 
 class Burger {
 public:
     std::string name;
-    std::vector<Ingredient> ingredients;
+    std::vector<Ingredient*> ingredients; // Используем указатели на базовый класс
     double price;
 
     Burger(std::string name) : name(name), price(0) {}
 
-    void addIngredient(const Ingredient& ingredient) {
+    void addIngredient(Ingredient* ingredient) {
         ingredients.push_back(ingredient);
-        price += ingredient.price;
+        price += ingredient->price;
     }
 
     void removeIngredient(const std::string& ingredientName) {
         for (auto it = ingredients.begin(); it != ingredients.end(); ++it) {
-            if (it->name == ingredientName) {
-                price -= it->price;
+            if ((*it)->name == ingredientName) {
+                price -= (*it)->price;
                 ingredients.erase(it);
                 break;
             }
@@ -39,74 +65,27 @@ public:
     double calculatePrice() const {
         return price;
     }
-};
 
-class Menu {
-public:
-    std::vector<Burger> burgerList;
-
-    Burger selectBurger(const std::string& name) {
-        for (auto& burger : burgerList) {
-            if (burger.name == name) {
-                return burger;
-            }
+    void prepareIngredients() const {
+        for (const auto& ingredient : ingredients) {
+            ingredient->prepare(); // Полиморфный вызов метода
         }
-        throw std::runtime_error("Бургер не найден");
-    }
-};
-
-class BurgerBuilder {
-public:
-    Burger currentBurger;
-
-    BurgerBuilder(std::string name) : currentBurger(name) {}
-
-    void addBun(const Ingredient& bun) {
-        currentBurger.addIngredient(bun);
-    }
-
-    void addSauce(const Ingredient& sauce) {
-        currentBurger.addIngredient(sauce);
-    }
-
-    void addFilling(const Ingredient& filling) {
-        currentBurger.addIngredient(filling);
-    }
-
-    Burger getBurger() {
-        return currentBurger;
-    }
-};
-
-class Worker {
-public:
-    void prepareBurger(const Burger& burger) {
-        std::cout << "Подготовка бургера: " << burger.name << std::endl;
-    }
-
-    double serveCustomer(const Burger& burger) {
-        return burger.calculatePrice();
     }
 };
 
 int main() {
     setlocale(LC_ALL, "ru");
-    Ingredient bun("Булочка", "Хлеб", 29.99, "Свежая булочка");
-    Ingredient patty("Котлета", "Мясо", 119.99, "Говяжья котлета");
-    Ingredient cheese("Сыр", "Молочный", 49.89, "Чеддер");
 
-    BurgerBuilder builder("Супер-чизбургер");
-    builder.addBun(bun);
-    builder.addSauce(patty);
-    builder.addFilling(cheese);
+    Bun bun("Булочка", "Хлеб", 29.99, "Свежая булочка");
+    Patty patty("Котлета", "Мясо", 119.99, "Говяжья котлета");
 
-    Burger cheeseburger = builder.getBurger();
+    Burger burger("Супер-чизбургер");
+    burger.addIngredient(&bun);
+    burger.addIngredient(&patty);
 
-    Worker worker;
-    worker.prepareBurger(cheeseburger);
-    double price = worker.serveCustomer(cheeseburger);
+    burger.prepareIngredients(); // Полиморфный вызов
 
-    std::cout << "Цена бургера: " << price << " рублей" << std::endl;
+    std::cout << "Цена бургера: " << burger.calculatePrice() << " рублей" << std::endl;
 
     return 0;
 }

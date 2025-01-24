@@ -3,18 +3,22 @@
 #include <vector>
 
 class Ingredient {
-public:
+private:
     std::string name;
     std::string type;
     double price;
     std::string description;
 
+public:
     Ingredient(std::string name, std::string type, double price, std::string desc) :
         name(name), type(type), price(price), description(desc) {}
 
     virtual void prepare() const {
         std::cout << "Подготовка ингредиента: " << name << std::endl;
     }
+
+    std::string getName() const { return name; }
+    double getPrice() const { return price; }
 };
 
 class Bun : public Ingredient {
@@ -23,7 +27,7 @@ public:
         : Ingredient(name, type, price, desc) {}
 
     void prepare() const override {
-        std::cout << "Подготовка булочки: " << name << std::endl;
+        std::cout << "Подготовка булочки: " << getName() << std::endl;
     }
 };
 
@@ -33,27 +37,28 @@ public:
         : Ingredient(name, type, price, desc) {}
 
     void prepare() const override {
-        std::cout << "Подготовка котлеты: " << name << std::endl;
+        std::cout << "Подготовка котлеты: " << getName() << std::endl;
     }
 };
 
 class Burger {
-public:
+private:
     std::string name;
-    std::vector<Ingredient*> ingredients; 
+    std::vector<Ingredient*> ingredients;
     double price;
 
+public:
     Burger(std::string name) : name(name), price(0) {}
 
     void addIngredient(Ingredient* ingredient) {
         ingredients.push_back(ingredient);
-        price += ingredient->price;
+        price += ingredient->getPrice();
     }
 
     void removeIngredient(const std::string& ingredientName) {
         for (auto it = ingredients.begin(); it != ingredients.end(); ++it) {
-            if ((*it)->name == ingredientName) {
-                price -= (*it)->price;
+            if ((*it)->getName() == ingredientName) {
+                price -= (*it)->getPrice();
                 ingredients.erase(it);
                 break;
             }
@@ -66,7 +71,7 @@ public:
 
     void prepareIngredients() const {
         for (const auto& ingredient : ingredients) {
-            ingredient->prepare(); 
+            ingredient->prepare();
         }
     }
 
@@ -78,9 +83,10 @@ public:
 };
 
 class Worker {
-public:
+private:
     std::string name;
 
+public:
     Worker(std::string name) : name(name) {}
 
     void prepareBurger(Burger& burger) const {
